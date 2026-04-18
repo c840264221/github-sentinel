@@ -1,18 +1,25 @@
-# core/scheduler.py
-
 import time
+from app.interfaces.cli.run import run
 
 
-def start_scheduler(job_func, interval_seconds=60):
-    print("⏰ Scheduler started...")
+class Scheduler:
+    def __init__(self,github_client, notifier, report_generator, subscription_manager, interval=86400):
+        self.github_client = github_client
+        self.notifier = notifier
+        self.report_generator = report_generator
+        self.subscription_manager = subscription_manager
+        self.interval = interval
+    def start(self):
+        self.run()
 
-    while True:
-        print("🔄 Running scheduled job...")
+    def run(self):
+        print("⏰ Scheduler started...")
 
-        try:
-            job_func()
-        except Exception as e:
-            print(f"❌ Error: {e}")
-
-        print(f"😴 Sleeping for {interval_seconds} seconds...\n")
-        time.sleep(interval_seconds)
+        while True:
+            print("🔄 Running scheduled job...")
+            try:
+                run()
+            except Exception as e:
+                print(f"❌ Error: {e}")
+            print(f"😴 Sleeping for {self.interval} seconds...\n")
+            time.sleep(self.interval)

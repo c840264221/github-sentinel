@@ -1,99 +1,57 @@
-from app.interfaces.cli.run import run
-from app.core.scheduler import start_scheduler
-import argparse
+from app.core.scheduler import Scheduler
 from app.storage.repository import SubscriptionRepository
 import threading
+from app.core.config import Settings
+from app.data.github_client import GitHubClient
+from app.core.command_handler import CommandHandler
+import shlex
 
 
-def scheduler_thread():
-    start_scheduler(job_func=run, interval_seconds=60)
-
-
-def cli_loop():
-    repo = SubscriptionRepository()
-
-    while True:
-        cmd = input("👉 Enter command (add/remove/list/exit): ").strip()
-
-        if cmd.startswith("add "):
-            repo_name = cmd.split(" ", 1)[1]
-            repo.add(repo_name)
-
-        elif cmd.startswith("remove "):
-            repo_name = cmd.split(" ", 1)[1]
-            repo.remove(repo_name)
-
-        elif cmd == "list":
-            subs = repo.get_all()
-            if not subs:
-                print("📭 No subscriptions")
-            else:
-                print("📦 Subscriptions:")
-                for sub in subs:
-                    print(f"- {sub['repo_name']}")
-
-        elif cmd == "exit":
-            print("👋 Exiting...")
-            break
-
-        else:
-            print("❓ Unknown command")
+def run_scheduler_thread(scheduler):
+    scheduler.start()
 
 
 def main():
-    # parser = argparse.ArgumentParser(description="GitHub Sentinel CLI")
-    #
-    # subparsers = parser.add_subparsers(dest="command")
-    #
-    # # add 命令
-    # add_parser = subparsers.add_parser("add")
-    # add_parser.add_argument("repo", help="Repository name (e.g. owner/repo)")
-    #
-    # # remove 命令
-    # remove_parser = subparsers.add_parser("remove")
-    # remove_parser.add_argument("repo", help="Repository name")
-    #
-    # # list 命令
-    # subparsers.add_parser("list")
-    #
-    # # run 命令  启动程序
-    # subparsers.add_parser("run")
-    #
-    # args = parser.parse_args()
-    #
-    # repo = SubscriptionRepository()
-    #
-    # if args.command == "add":
-    #     repo.add(args.repo)
-    #
-    # elif args.command == "remove":
-    #     repo.remove(args.repo)
-    #
-    # elif args.command == "list":
-    #     subs = repo.get_all()
-    #     if not subs:
-    #         print("📭 No subscriptions")
-    #     else:
-    #         print("📦 Subscriptions:")
-    #         for sub in subs:
-    #             print(f"- {sub['repo_name']}")
-    #
-    # elif args.command == "run":
-    #     print("🚀 Starting scheduler...")
-    #     start_scheduler(job_func=run, interval_seconds=60)
-    #
-    # else:
-    #     parser.print_help()
-
-    # run()
+    config = Settings()
+    github_client = GitHubClient(config.github_token)
+    subscription_manager = SubscriptionRepository()
+    command_handler = CommandHandler(github_client, subscription_manager)
+    scheduler = Scheduler(
+        github_client=github_client,
+        notifier=None,
+        report_generator=None,
+        subscription_manager=None,
+        interval=config.update_interval
+    )
     print("🚀 GitHub Sentinel (Interactive Mode)")
+    scheduler_thread = threading.Thread(target=run_scheduler_thread, args=(scheduler,))
+    scheduler_thread.daemon = True
+    scheduler_thread.start()
+
+    parser = command_handler.parser
+    command_handler.print_help()
+
+    while True:
+        try:
+            user_input = input("GitHub Sentinel> ")
+            if user_input in ['exit', 'quit']:
+                break
+            try:
+                args = parser.parse_args(shlex.split(user_input))
+                if args.command is None:
+                    continue
+                args.func(args)
+            except SystemExit as e:
+                print("Invalid command. Type 'help' to see the list of available commands.")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
 
     # 启动后台线程
-    t = threading.Thread(target=scheduler_thread, daemon=True)
-    t.start()
+    # t = threading.Thread(target=scheduler_thread, daemon=True)
+    # t.start()
 
     # 主线程处理输入
-    cli_loop()
+    # cli_loop()
 
 
 if __name__ == "__main__":

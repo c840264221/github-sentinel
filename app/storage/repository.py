@@ -2,9 +2,6 @@ import json
 import os
 from app.core.config import REPOSITORY_DATA_FILE
 
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# DATA_FILE = os.path.join(BASE_DIR, "data", "subscriptions.json")
-
 
 class SubscriptionRepository:
 
