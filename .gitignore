@@ -14,3 +14,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+#MarkDown
+app/reports/raw/*.md
+app/reports/processed/*.md

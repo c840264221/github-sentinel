@@ -20,3 +20,4 @@ class Settings:
         if self.update_interval:
             self.update_interval = int(self.update_interval)
         self.raw_reports_path = os.path.join(BASE_DIR, "reports", "raw")
+        self.processed_reports_path = os.path.join(BASE_DIR, "reports", "process")
