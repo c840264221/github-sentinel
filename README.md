@@ -14,9 +14,11 @@ GitHub Sentinel is an open-source tool that helps developers and project manager
 * 📢 Console-based notifications
 * 🧱 Modular and extensible architecture
 
----
 
 ## 📂 Project Structure
+---
+
+```text
 app/
 ├── core/ # Core infrastructure
 │ ├── config.py # Configuration management
@@ -58,6 +60,7 @@ tests/ # Test cases
 README.md # Project documentation
 requirements.txt # Python dependencies
 LICENSE # License
+```
 
 ---
 
