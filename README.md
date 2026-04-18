@@ -16,17 +16,48 @@ GitHub Sentinel is an open-source tool that helps developers and project manager
 
 ---
 
-## 🏗️ Project Structure
+## 📂 Project Structure
+app/
+├── core/ # Core infrastructure
+│ ├── config.py # Configuration management
+│ ├── command_handler.py # CLI command parsing/handling
+│ └── scheduler.py # Background scheduler (multi-threaded)
 
-```
-github-sentinel/
-├── app/              # Entry point
-├── core/             # Config & scheduler
-├── services/         # Business logic
-├── integrations/     # External APIs
-├── storage/          # Data storage
-├── models/           # Data models
-```
+├── data/ # Data access layer
+│ ├── github_client.py # GitHub API client (fetch issues/PRs)
+│ └── subscriptions.json # Persistent storage for subscribed repositories
+
+├── domain/ # Domain models (currently unused / reserved)
+│ └── models.py
+
+├── interfaces/ # Interface layer
+│ └── cli/
+│ └── run.py # CLI entry for triggering workflows
+
+├── services/ # Business logic layer
+│ ├── report_generator.py # Generate raw Markdown reports
+│ └── llm/ # LLM integration layer
+│ ├── base.py # LLM abstract interface
+│ ├── factory.py # LLM client factory
+│ └── ollama_client.py # Ollama-based local LLM implementation
+
+├── reports/ # Generated reports (ignored by Git)
+│ ├── raw/ # Raw data reports
+│ └── processed/ # LLM summarized reports
+
+├── storage/ # Persistence logic
+│ └── repository.py # Manage subscriptions (add/remove/list)
+
+├── main.py # Application entry point (scheduler + CLI loop)
+
+data/ # (optional external data dir, if used)
+tests/ # Test cases
+
+.env # Environment variables
+.gitignore # Git ignore rules
+README.md # Project documentation
+requirements.txt # Python dependencies
+LICENSE # License
 
 ---
 
