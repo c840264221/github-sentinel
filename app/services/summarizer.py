@@ -17,3 +17,11 @@ def summarize(repo_data: RepoData) -> str:
             Summary:
             Project is active with ongoing updates.
     """
+
+def fetch_repo_updates(repo_name,issues, pull_requests, commits):
+    return {
+        "repo": repo_name,
+        "issues": issues,
+        "pull_requests": pull_requests,
+        "commits": commits,
+    }

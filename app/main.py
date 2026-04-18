@@ -46,14 +46,6 @@ def main():
         except Exception as e:
             print(f"Unexpected error: {e}")
 
-    # 启动后台线程
-    # t = threading.Thread(target=scheduler_thread, daemon=True)
-    # t.start()
-
-    # 主线程处理输入
-    # cli_loop()
-
 
 if __name__ == "__main__":
     main()
-    # run()

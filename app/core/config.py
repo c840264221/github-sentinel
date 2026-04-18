@@ -11,7 +11,6 @@ class Settings:
     def __init__(self):
         self.load_config()
     def load_config(self):
-
         self.github_token = os.getenv("GITHUB_TOKEN")
         self.default_repos = []
         with open(REPOSITORY_DATA_FILE, "r", encoding="utf-8") as f:
@@ -20,3 +19,4 @@ class Settings:
         self.update_interval = int(os.getenv("UPDATE_INTERVAL"))
         if self.update_interval:
             self.update_interval = int(self.update_interval)
+        self.raw_reports_path = os.path.join(BASE_DIR, "reports", "raw")
