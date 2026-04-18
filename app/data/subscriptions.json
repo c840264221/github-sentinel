@@ -1,0 +1,10 @@
+[
+  {
+    "repo_name": "langchain-ai/langchain",
+    "user": "default"
+  },
+  {
+    "repo_name": "openai/openai-python",
+    "user": "default"
+  }
+]
