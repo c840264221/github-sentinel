@@ -1,24 +1,24 @@
-**简报**
+📊 **项目简报**
 
-🔴 **新增功能**
-Add Response.output_as_input for multi-turn follow-ups (#3032)
-Add a safe follow-up input helper for Responses output (#3028)
-Add Response.as_input() helper for stateless follow-ups (#3029)
+**新增功能** 💡
 
-🟠 **主要改进**
-Treat empty OPENAI_BASE_URL as unset and fall back to default (#3058)
-Handle null text values in Response.output_text (#3057)
-Add docstrings to parsing helpers and streaming events (#3046)
+* Add Response.output_as_input helper for manual replay
+* Add helpers for reusing Responses output as input
+* Add a safe follow-up input helper for Responses output
+* Add Response.as_input() helper for stateless follow-ups
 
-🔵 **修复问题**
-fix(structured outputs): resolve memory leak in parse methods (#2860)
-Fix vision example to use Chat Completions API (#2904)
-Refresh callable Azure API keys before requests (#2992)
-Normalize module client base_url trailing slash (#2990)
-Add aclose alias to AsyncStream (#2996)
-fix: coerce by_alias=None to False in model_dump to fix TypeError with pydantic v2 (#2999)
-fix: treat empty OPENAI_BASE_URL env var as unset to restore default fallback (#3001)
+**主要改进** 🔧
 
-🟡 **其他**
-Pin GitHub Actions workflow references (#3021)
-release: 2.32.0 (#3074), 2.31.0 (#3020), 2.30.0 (#2995)
+* Normalize module client base_url trailing slash
+* Refresh callable Azure API keys before requests
+* Treat empty OPENAI_BASE_URL as unset and fall back to default
+* Fix: handle null text values in Response.output_text
+
+**修复问题** 🚀
+
+* Pin setup-rye in GitHub workflows
+* Release: 2.32.0, 2.31.0, 2.30.0
+* Fix: coerce by_alias=None to False in model_dump to fix TypeError with pydantic v2
+* Fix: add client-side validation for shell tool allowlist network policy
+
+Note: The above report is based on the provided pull requests and issues. If you would like me to reorganize or reformat the information, please let me know! 😊

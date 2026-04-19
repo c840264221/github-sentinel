@@ -1,11 +1,15 @@
 import requests
 from datetime import datetime, timedelta, date
+from app.storage.repository import SubscriptionRepository
+from app.storage.verifiication import verify_md_exist, add_fetch_time
 
 
 BASE_URL = "https://api.github.com"
 
 
 class GitHubClient:
+    subscription_repository = SubscriptionRepository()
+
     def __init__(self, token):
         self.token = token
         self.headers = {
@@ -19,6 +23,8 @@ class GitHubClient:
         response.raise_for_status()
         return response.json()
 
+    @add_fetch_time(subscription_repository)
+    @verify_md_exist(subscription_repository)
     def fetch_issues(self, repo: str, since=None):
         url = f"{BASE_URL}/repos/{repo}/issues"
         params = {
@@ -46,6 +52,8 @@ class GitHubClient:
             for i in issues
         ]
 
+    @add_fetch_time(subscription_repository)
+    @verify_md_exist(subscription_repository)
     def fetch_pull_requests(self, repo, since=None):
         url = f"{BASE_URL}/repos/{repo}/pulls"
         params = {
