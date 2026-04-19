@@ -16,12 +16,20 @@ class SubscriptionRepository:
         with open(REPOSITORY_DATA_FILE, "r") as f:
             return json.load(f)
 
-    def _save(self, data):
+    def save(self, data):
         with open(REPOSITORY_DATA_FILE, "w") as f:
             json.dump(data, f, indent=2)
 
     def get_all(self):
         return self._load()
+
+    def get_one(self, repo_name):
+        all_data = self._load()
+        for value in all_data:
+            if value["repo_name"] == repo_name:
+                return value
+        return {}
+
 
     def add(self, repo_name, user="default"):
         data = self._load()
@@ -36,7 +44,7 @@ class SubscriptionRepository:
             "user": user
         })
 
-        self._save(data)
+        self.save(data)
         print(f"✅ Added subscription: {repo_name}")
 
     def remove(self, repo_name):
@@ -48,5 +56,5 @@ class SubscriptionRepository:
             print("⚠️ Subscription not found")
             return
 
-        self._save(new_data)
+        self.save(new_data)
         print(f"🗑️ Removed subscription: {repo_name}")

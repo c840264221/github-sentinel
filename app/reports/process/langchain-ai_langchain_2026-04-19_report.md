@@ -1,20 +1,21 @@
-**项目简报**
+📦 langchain-ai/langchain Updates (2026-04-19)
 
-🔥 **新增功能** 🔥
+**新增功能**
 
-* 添加OnCell integration — persistent sandboxed environments for agents（docs: add OnCell integration — persistent sandboxed environments for agents）
-* 支持Opus 4.7 features（feat(anthropic): support opus 4.7 features）
+💡 **Non-probabilistic decision frameworks**: Support for non-probabilistic decision frameworks (hexagram state machines) in agent orchestration.
 
-🔄 **主要改进** 🔄
+**主要改进**
 
-*  perf(core): lazy-import transformers in get_tokenizer()（perf(core): lazy-import transformers in get_tokenizer())
-*  feat(langchain): Tag middleware runs with ls_agent_type（feat(langchain): Tag middleware runs with ls_agent_type）
-*  chore(model-profiles): refresh model profile data（chore(model-profiles): refresh model profile data）
+💪 **Lazy-import transformers**: Improve performance by lazy-importing transformers in `get_tokenizer()`.
 
-🚨 **修复问题** 🚨
+**修复问题**
 
-*  fix(openai): resolve AIMessageChunk not including reasoning_content in additional_kwargs（fix(openai): resolve AIMessageChunk not including reasoning_content in additional_kwargs）
-*  fix(core): correct typo structured_query.py（fix(core): correct typo structured_query.py）
-*  fix(core): unxfail stream error callback test（fix(core): unxfail stream error callback test）
+🚨 **Fixed XML mixed content parsing**: Fix XML mixed content parsing in XMLOutputParser to preserve children when text is present.
 
-注意：以上内容根据github issue和pull request信息生成的简报，旨在总结项目的最新进展。
+其他改进和维护工作包括：
+
+📝 **Documentation updates**: Improved README, clarified structure, and fixed model reference.
+🔒 **Bumped langsmith version**: Upgraded langsmith from 0.7.13 to 0.7.31 in `/libs/langchain` and `/libs/core`.
+📊 **Model profile data refresh**: Refreshed model profile data.
+
+Note: The above report is a summary of the latest updates, features, and bug fixes for the langchain-ai/langchain project on GitHub.
