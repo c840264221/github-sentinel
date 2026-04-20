@@ -4,6 +4,7 @@ import threading
 from app.core.config import Settings
 from app.data.github_client import GitHubClient
 from app.core.command_handler import CommandHandler
+from app.core.logger import setup_logger, get_logger
 import shlex
 
 
@@ -12,6 +13,8 @@ def run_scheduler_thread(scheduler):
 
 
 def main():
+    setup_logger()
+    logger = get_logger(__name__)
     config = Settings()
     github_client = GitHubClient(config.github_token)
     subscription_manager = SubscriptionRepository()
@@ -37,14 +40,19 @@ def main():
             if user_input in ['exit', 'quit']:
                 break
             try:
+
                 args = parser.parse_args(shlex.split(user_input))
+
                 if args.command is None:
                     continue
                 args.func(args)
-            except SystemExit as e:
-                print("Invalid command. Type 'help' to see the list of available commands.")
+            except ValueError:
+                # print("Invalid command. Type 'help' to see the list of available commands.")
+                # logger.exception("Error occurred")
+                continue
         except Exception as e:
             print(f"Unexpected error: {e}")
+            logger.exception("Unexpected error")
 
 
 if __name__ == "__main__":

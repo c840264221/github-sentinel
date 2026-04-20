@@ -2,14 +2,15 @@ import requests
 from datetime import datetime, timedelta, date
 from app.storage.repository import SubscriptionRepository
 from app.storage.verifiication import verify_md_exist, add_fetch_time
+from app.core.logger import get_logger
+import os
 
 
-BASE_URL = "https://api.github.com"
-
+logger = get_logger(__name__)
 
 class GitHubClient:
     subscription_repository = SubscriptionRepository()
-
+    base_url = os.getenv("GITHUB_BASE_URL")
     def __init__(self, token):
         self.token = token
         self.headers = {
@@ -18,24 +19,28 @@ class GitHubClient:
         }
 
     def fetch_commits(self, repo: str):
-        url = f"{BASE_URL}/repos/{repo}/commits"
+        url = f"{self.base_url}/repos/{repo}/commits"
         response = requests.get(url, headers=self.headers)
         response.raise_for_status()
         return response.json()
 
-    @add_fetch_time(subscription_repository)
+    # @add_fetch_time(subscription_repository)
     @verify_md_exist(subscription_repository)
     def fetch_issues(self, repo: str, since=None):
-        url = f"{BASE_URL}/repos/{repo}/issues"
+        logger.info(f"Fetching issues for {repo} since {since}")
+        url = f"{self.base_url}/repos/{repo}/issues"
         params = {
             "state": "closed",
             "sort": "updated",
-            "direction": "desc",
+            # "direction": "desc",
         }
         if since:
             params["since"] = since
-
-        resp = requests.get(url, headers=self.headers, params=params)
+        try:
+            resp = requests.get(url, headers=self.headers, params=params)
+        except requests.exceptions.RequestException as e:
+            logger.error(e)
+            return []
         resp.raise_for_status()
 
         data = resp.json()
@@ -55,15 +60,19 @@ class GitHubClient:
     @add_fetch_time(subscription_repository)
     @verify_md_exist(subscription_repository)
     def fetch_pull_requests(self, repo, since=None):
-        url = f"{BASE_URL}/repos/{repo}/pulls"
+        url = f"{self.base_url}/repos/{repo}/pulls"
         params = {
             "state": "closed",
             "sort": "updated",
-            "direction": "desc",
+            # "direction": "desc",
         }
         if since:
             params["since"] = since
-        resp = requests.get(url, headers=self.headers, params=params)
+        try:
+            resp = requests.get(url, headers=self.headers, params=params)
+        except requests.exceptions.RequestException as e:
+            logger.error(e)
+            return []
         resp.raise_for_status()
 
         data = resp.json()
