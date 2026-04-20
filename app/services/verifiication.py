@@ -1,6 +1,7 @@
 import functools
 from datetime import datetime
 from app.core.logger import get_logger
+from app.core.constants import SKIP
 
 
 logger = get_logger(__name__)
@@ -11,7 +12,6 @@ def verify_md_exist(repo_repository):
         def wrapper(*args, **kwargs):
             repo = kwargs.get("repo") or args[1]
             since = kwargs.get("since")
-
             if not since:
                 return func(*args, **kwargs)
 
@@ -30,7 +30,7 @@ def verify_md_exist(repo_repository):
             if start_time == since.isoformat() and end_time == today:
                 # print('The data is already fetched!')
                 logger.info(f"⏭ Skip {repo}, already fetched today")
-                return 'EXIST'
+                return SKIP
 
             return func(*args, **kwargs)
         return wrapper

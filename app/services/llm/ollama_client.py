@@ -23,3 +23,4 @@ class OllamaClient(LLMClient):
         logger.info(f"Ollama summary completed")
 
         return response.json().get("response","")
+

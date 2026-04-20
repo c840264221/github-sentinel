@@ -5,8 +5,7 @@ from app.core.config import Settings
 
 config = Settings()
 class ReportGenerator:
-    def __init__(self, llm):
-        self.llm = llm
+    def __init__(self):
         self.raw_reports_path = config.raw_reports_path
         self.processed_reports_path = config.processed_reports_path
 
@@ -52,19 +51,15 @@ class ReportGenerator:
 
         return file_path
 
-    def generate_process_markdown_report(self, markdown_file_path):
+    def generate_process_markdown_report(self, markdown_file_content,markdown_file_path):
         os.makedirs(self.processed_reports_path, exist_ok=True)
-        # print(f"<UNK> Report generated: {markdown_file_path}")
-        with open(markdown_file_path, 'r', encoding="utf-8") as file:
-            markdown_content = file.read()
-
-        report = self.llm.generate_daily_report(markdown_content)
+        report = markdown_file_content
 
         report_file_name = os.path.basename(markdown_file_path)
         name_without_ext = os.path.splitext(report_file_name)[0]
         process_report_file_path = name_without_ext + "_report.md"
         report_file_path = os.path.join(self.processed_reports_path, process_report_file_path)
-        print(report_file_path)
+        # print(report_file_path)
 
         with open(report_file_path, 'w+', encoding="utf-8") as report_file:
             report_file.write(report)

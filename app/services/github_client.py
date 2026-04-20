@@ -1,7 +1,6 @@
 import requests
-from datetime import datetime, timedelta, date
 from app.storage.repository import SubscriptionRepository
-from app.storage.verifiication import verify_md_exist, add_fetch_time
+from app.services.verifiication import verify_md_exist, add_fetch_time
 from app.core.logger import get_logger
 import os
 
@@ -17,6 +16,10 @@ class GitHubClient:
             "Authorization": f"Bearer {self.token}",
             "Accept": "application/vnd.github+json",
         }
+    def fetch_repo_updates(self,repo, since):
+        issues = self.fetch_issues(repo=repo, since=since)
+        prs = self.fetch_pull_requests(repo=repo, since=since)
+        return issues, prs
 
     def fetch_commits(self, repo: str):
         url = f"{self.base_url}/repos/{repo}/commits"
@@ -24,7 +27,6 @@ class GitHubClient:
         response.raise_for_status()
         return response.json()
 
-    # @add_fetch_time(subscription_repository)
     @verify_md_exist(subscription_repository)
     def fetch_issues(self, repo: str, since=None):
         logger.info(f"Fetching issues for {repo} since {since}")

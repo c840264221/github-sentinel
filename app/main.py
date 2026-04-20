@@ -1,9 +1,9 @@
-from app.core.scheduler import Scheduler
+from app.interfaces.cli.scheduler import Scheduler
 from app.storage.repository import SubscriptionRepository
 import threading
 from app.core.config import Settings
-from app.data.github_client import GitHubClient
-from app.core.command_handler import CommandHandler
+from app.services.github_client import GitHubClient
+from app.interfaces.cli.command_handler import CommandHandler
 from app.core.logger import setup_logger, get_logger
 import shlex
 
@@ -47,8 +47,6 @@ def main():
                     continue
                 args.func(args)
             except ValueError:
-                # print("Invalid command. Type 'help' to see the list of available commands.")
-                # logger.exception("Error occurred")
                 continue
         except Exception as e:
             print(f"Unexpected error: {e}")
