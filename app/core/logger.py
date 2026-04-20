@@ -1,20 +1,34 @@
-import logging
+import sys
 import os
+from loguru import logger
 
-def setup_logger():
+# 防止重复初始化（很重要）
+if not logger._core.handlers:
+
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
 
-    log_file = os.path.join(log_dir, "app.log")
+    log_format = "{time:YYYY-MM-DD HH:mm:ss} | {level} | {module}:{function}:{line} - {message}"
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-        handlers=[
-            logging.FileHandler(log_file, encoding="utf-8"),
-            logging.StreamHandler()
-        ]
+    # 清除默认 handler
+    logger.remove()
+
+    # 控制台
+    logger.add(
+        sys.stdout,
+        level="DEBUG",
+        format=log_format,
+        colorize=True
     )
 
-def get_logger(name: str):
-    return logging.getLogger(name)
+    # 文件
+    logger.add(
+        os.path.join(log_dir, "app.log"),
+        level="DEBUG",
+        format=log_format,
+        rotation="1 MB",
+        encoding="utf-8"
+    )
+
+# 对外暴露统一入口
+LOG = logger

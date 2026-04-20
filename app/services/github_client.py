@@ -1,11 +1,9 @@
 import requests
 from app.storage.repository import SubscriptionRepository
 from app.services.verifiication import verify_md_exist, add_fetch_time
-from app.core.logger import get_logger
+from app.core.logger import LOG
 import os
 
-
-logger = get_logger(__name__)
 
 class GitHubClient:
     subscription_repository = SubscriptionRepository()
@@ -29,7 +27,7 @@ class GitHubClient:
 
     @verify_md_exist(subscription_repository)
     def fetch_issues(self, repo: str, since=None):
-        logger.info(f"Fetching issues for {repo} since {since}")
+        LOG.info(f"Fetching issues for {repo} since {since}")
         url = f"{self.base_url}/repos/{repo}/issues"
         params = {
             "state": "closed",
@@ -41,7 +39,7 @@ class GitHubClient:
         try:
             resp = requests.get(url, headers=self.headers, params=params)
         except requests.exceptions.RequestException as e:
-            logger.error(e)
+            LOG.error(e)
             return []
         resp.raise_for_status()
 
@@ -73,7 +71,7 @@ class GitHubClient:
         try:
             resp = requests.get(url, headers=self.headers, params=params)
         except requests.exceptions.RequestException as e:
-            logger.error(e)
+            LOG.error(e)
             return []
         resp.raise_for_status()
 

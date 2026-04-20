@@ -1,8 +1,7 @@
 from app.core.constants import SKIP
-from app.core.logger import  get_logger
+from app.core.logger import  LOG
 
 
-logger = get_logger(__name__)
 class TaskRunner:
 
     def __init__(self, github_service, report_generator, llm_client):
@@ -14,17 +13,17 @@ class TaskRunner:
         try:
             print(f"🚀 Start task: {task.repo}")
             task.status = "running"
-            logger.info(f"<UNK> Start task: {task.repo}")
+            LOG.info(f"<UNK> Start task: {task.repo}")
 
             # 1️⃣ 获取数据
             issues, prs = self.fetch(task)
-            logger.info(f"<UNK> Start fetching data: {task.repo}")
+            LOG.info(f"<UNK> Start fetching data: {task.repo}")
 
             # 👉 跳过逻辑
             if issues is SKIP and prs is SKIP:
                 print(f"⏭ {task.repo} skipped")
                 task.status = "skipped"
-                logger.info(f"<UNK> Skip task: {task.repo}")
+                LOG.info(f"<UNK> Skip task: {task.repo}")
                 return task
             else:
                 if issues is SKIP:
@@ -35,7 +34,7 @@ class TaskRunner:
             # 2️⃣ 生成原始 md
             raw_file = self.generate_md(task, issues, prs)
             task.raw_file = raw_file
-            logger.info(f"<UNK> generate_md: {task.repo}")
+            LOG.info(f"<UNK> generate_md: {task.repo}")
 
             # 3️⃣ LLM 总结
             summary = self.summarize(raw_file)

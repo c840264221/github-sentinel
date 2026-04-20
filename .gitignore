@@ -17,4 +17,4 @@ Thumbs.db
 
 #MarkDown
 app/reports/raw/*.md
-app/reports/processed/*.md
+app/reports/process/*.md

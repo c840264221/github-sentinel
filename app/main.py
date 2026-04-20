@@ -4,7 +4,7 @@ import threading
 from app.core.config import Settings
 from app.services.github_client import GitHubClient
 from app.interfaces.cli.command_handler import CommandHandler
-from app.core.logger import setup_logger, get_logger
+from app.core.logger import LOG
 import shlex
 
 
@@ -13,8 +13,6 @@ def run_scheduler_thread(scheduler):
 
 
 def main():
-    setup_logger()
-    logger = get_logger(__name__)
     config = Settings()
     github_client = GitHubClient(config.github_token)
     subscription_manager = SubscriptionRepository()
@@ -50,7 +48,7 @@ def main():
                 continue
         except Exception as e:
             print(f"Unexpected error: {e}")
-            logger.exception("Unexpected error")
+            LOG.error("Unexpected error")
 
 
 if __name__ == "__main__":
