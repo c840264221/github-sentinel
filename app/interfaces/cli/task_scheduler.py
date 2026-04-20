@@ -3,7 +3,7 @@ from app.interfaces.cli.run import run
 from app.core.logger import LOG
 
 
-class Scheduler:
+class RunScheduler:
     def __init__(self,github_client, notifier, report_generator, subscription_manager, interval=86400):
         self.github_client = github_client
         self.notifier = notifier
@@ -14,8 +14,8 @@ class Scheduler:
         self.run()
 
     def run(self):
-        print("⏰ Scheduler started...")
-        LOG.info("Scheduler started")
+        print("⏰ RunScheduler started...")
+        LOG.info("RunScheduler started")
         while True:
             print("🔄 Running scheduled job...")
             LOG.info(f"Running scheduled job...")

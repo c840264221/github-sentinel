@@ -1,4 +1,4 @@
-from app.interfaces.cli.scheduler import Scheduler
+from app.interfaces.cli.task_scheduler import RunScheduler
 from app.storage.repository import SubscriptionRepository
 import threading
 from app.core.config import Settings
@@ -8,8 +8,8 @@ from app.core.logger import LOG
 import shlex
 
 
-def run_scheduler_thread(scheduler):
-    scheduler.start()
+def run_scheduler_thread(run_scheduler):
+    run_scheduler.start()
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     github_client = GitHubClient(config.github_token)
     subscription_manager = SubscriptionRepository()
     command_handler = CommandHandler(github_client, subscription_manager)
-    scheduler = Scheduler(
+    run_scheduler = RunScheduler(
         github_client=github_client,
         notifier=None,
         report_generator=None,
@@ -25,7 +25,7 @@ def main():
         interval=config.update_interval
     )
     print("🚀 GitHub Sentinel (Interactive Mode)")
-    scheduler_thread = threading.Thread(target=run_scheduler_thread, args=(scheduler,))
+    scheduler_thread = threading.Thread(target=run_scheduler_thread, args=(run_scheduler,))
     scheduler_thread.daemon = True
     scheduler_thread.start()
 
