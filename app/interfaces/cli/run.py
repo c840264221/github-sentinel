@@ -3,8 +3,8 @@ from app.services.github_client import GitHubClient
 from app.services.report_generator import ReportGenerator
 from datetime import datetime, timedelta
 from app.services.llm.ollama_client import OllamaClient
-from app.domain.task import Task
-from app.services.task_runner import TaskRunner
+from app.domain.task import GithubTask
+from app.services.task_runner import GithubTaskRunner
 
 
 
@@ -17,9 +17,9 @@ def run():
     since = datetime.now() - timedelta(days=1)
 
     for repo in settings.default_repos:
-        task = Task(repo=repo, since=since)
+        task = GithubTask(repo=repo, since=since)
 
-        runner = TaskRunner(
+        runner = GithubTaskRunner(
             GitHubClient(settings.github_token),
             report_generator,
             llm_client
@@ -27,4 +27,4 @@ def run():
 
         result = runner.run(task)
 
-        print(f"Task status: {result.status}")
+        print(f"GithubTask status: {result.status}")

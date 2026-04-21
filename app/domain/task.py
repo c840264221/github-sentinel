@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dataclass
-class Task:
+class GithubTask:
     repo: str
     since: datetime
 

@@ -3,8 +3,8 @@ import json
 from datetime import datetime, timedelta
 import os
 
-from app.domain.task import Task
-from app.services.task_runner import TaskRunner
+from app.domain.task import GithubTask
+from app.services.task_runner import GithubTaskRunner
 from app.services.github_client import GitHubClient
 from app.services.report_generator import ReportGenerator
 from app.services.llm.ollama_client import OllamaClient
@@ -23,7 +23,7 @@ github_client = GitHubClient(github_token)
 report_generator = ReportGenerator()
 llm_client = OllamaClient()
 
-runner = TaskRunner(
+runner = GithubTaskRunner(
     github_client,
     report_generator,
     llm_client
@@ -63,7 +63,7 @@ def run_task(repo, days):
 
     since_date = datetime.now() - timedelta(days=int(days))
 
-    task = Task(repo=repo, since=since_date)
+    task = GithubTask(repo=repo, since=since_date)
     result = runner.run(task)
 
     # 处理状态

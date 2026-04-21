@@ -51,16 +51,20 @@ class ReportGenerator:
 
         return file_path
 
-    def generate_process_markdown_report(self, markdown_file_content,markdown_file_path):
+    def generate_process_markdown_report(self, markdown_file_content,markdown_file_path=None, hn_report_path=None):
         os.makedirs(self.processed_reports_path, exist_ok=True)
         report = markdown_file_content
-
-        report_file_name = os.path.basename(markdown_file_path)
-        name_without_ext = os.path.splitext(report_file_name)[0]
-        process_report_file_path = name_without_ext + "_report.md"
-        report_file_path = os.path.join(self.processed_reports_path, process_report_file_path)
+        report_file_path = ''
+        if markdown_file_path:
+            report_file_name = os.path.basename(markdown_file_path)
+            name_without_ext = os.path.splitext(report_file_name)[0]
+            process_report_file_path = name_without_ext + "_report.md"
+            report_file_path = os.path.join(self.processed_reports_path, process_report_file_path)
         # print(report_file_path)
-
+        if hn_report_path:
+            report_file_path = hn_report_path
+        if len(report_file_path) == 0:
+            return print(f"Not found report file path ")
         with open(report_file_path, 'w+', encoding="utf-8") as report_file:
             report_file.write(report)
 

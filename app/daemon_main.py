@@ -4,17 +4,21 @@ import sys
 import signal
 import os
 from datetime import datetime, timedelta
+import threading
 
 import schedule
 
 from app.services.github_client import GitHubClient
 from app.services.report_generator import ReportGenerator
 from app.services.llm.ollama_client import OllamaClient
-from app.services.task_runner import TaskRunner
-from app.domain.task import Task
+from app.services.task_runner import GithubTaskRunner
+from app.domain.task import GithubTask
 from app.core.logger import LOG
 from app.core.config import Settings, REPOSITORY_DATA_FILE
 from app.services.notification.email_sender import EmailSender
+from app.services.hacker_news_client import HackerNewsClient
+from app.core.HNStorage import HNStorage
+from app.services.task_runner import HNFetchTask, HNSummaryTask
 
 
 # 设置停止程序标识符
@@ -29,7 +33,7 @@ github_client = GitHubClient(github_token)
 report_generator = ReportGenerator()
 llm_client = OllamaClient()
 
-runner = TaskRunner(
+runner = GithubTaskRunner(
     github_client,
     report_generator,
     llm_client
@@ -61,7 +65,7 @@ def load_repos():
 # -------------------------
 # 定时任务逻辑
 # -------------------------
-def run_scheduled_task():
+def run_github_scheduled_task():
     LOG.info("Scheduled task started")
 
     repos = load_repos()
@@ -74,7 +78,7 @@ def run_scheduled_task():
         try:
             since_date = datetime.now() - timedelta(days=1)
 
-            task = Task(repo=repo, since=since_date)
+            task = GithubTask(repo=repo, since=since_date)
 
             LOG.info(f"Running task for {repo}")
             result = runner.run(task)
@@ -107,13 +111,27 @@ def main():
 
     LOG.info("Daemon process started")
 
-    run_scheduled_task()
+    # run_github_scheduled_task()
 
     # 每天固定时间执行（推荐 ⭐）
-    schedule.every().day.at("09:00").do(run_scheduled_task)
+    schedule.every().day.at("09:00").do(run_github_scheduled_task)
 
     # 测试用（每分钟）
     # schedule.every(1).minutes.do(run_scheduled_task)
+
+    hn_client = HackerNewsClient()
+    hn_storage = HNStorage()
+    fetch_HN_task = HNFetchTask(hn_client, hn_storage)
+    HN_summary_task = HNSummaryTask(hn_storage, llm_client, report_generator)
+
+    # fetch_HN_task.run()
+    # HN_summary_task.run()
+
+    # ⏰ 每小时抓一次
+    schedule.every(1).hours.do(lambda : threading.Thread(target=fetch_HN_task.run).start())
+
+    # 🕘 每天固定时间总结
+    schedule.every().day.at("19:00").do(HN_summary_task.run)
 
     try:
         while not shutdown_flag:

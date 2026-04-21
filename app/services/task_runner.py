@@ -1,8 +1,13 @@
 from app.core.constants import SKIP
 from app.core.logger import  LOG
+from app.core.config import Settings
+import os
+from datetime import datetime
 
 
-class TaskRunner:
+config = Settings()
+
+class GithubTaskRunner:
 
     def __init__(self, github_service, report_generator, llm_client):
         self.github_service = github_service
@@ -46,12 +51,12 @@ class TaskRunner:
             task.result = report_file
             task.status = "done"
 
-            print(f"✅ Task done: {task.repo}")
+            print(f"✅ GithubTask done: {task.repo}")
 
         except Exception as e:
             task.status = "failed"
             task.error = str(e)
-            print(f"❌ Task failed: {task.repo} | {e}")
+            print(f"❌ GithubTask failed: {task.repo} | {e}")
 
         return task
 
@@ -76,10 +81,54 @@ class TaskRunner:
         with open(raw_file, "r", encoding="utf-8") as f:
             content = f.read()
 
-        return self.llm_client.generate_daily_report(content)
+        return self.llm_client.generate_daily_report(content,config.github_prompt)
 
     def generate_report(self, raw_file, summary):
         return self.report_generator.generate_process_markdown_report(
             markdown_file_path=raw_file,
             markdown_file_content=summary
         )
+
+
+class HNFetchTask:
+    def __init__(self, hn_client, storage):
+        self.hn_client = hn_client
+        self.storage = storage
+
+    def run(self):
+        LOG.info("Start fetching Hacker News")
+
+        titles = self.hn_client.fetch_top_stories()
+
+        if not titles:
+            LOG.warning("No data fetched")
+            return
+
+        self.storage.save(titles)
+
+        LOG.info(f"Fetched {len(titles)} items")
+
+
+class HNSummaryTask:
+    def __init__(self, storage, llm, report_generator):
+        self.storage = storage
+        self.llm = llm
+        self.report_generator = report_generator
+
+    def run(self):
+        data = self.storage.load()
+
+        if not data:
+            LOG.info("No data to summarize")
+            return
+
+        titles = [item["title"] for item in data]
+        titles_str = "\n".join(titles)
+
+        summary = self.llm.generate_daily_report(titles_str, config.hacker_news_prompt)
+        today = datetime.now().date().isoformat()
+        hn_report_file_name = ''.join([today, "_hn_report.md"])
+        hn_report_path = os.path.join(config.HN_report_path, hn_report_file_name)
+        self.report_generator.generate_process_markdown_report(markdown_file_content=summary, markdown_file_path=None,hn_report_path=hn_report_path)
+
+        LOG.info("Summary report generated")
