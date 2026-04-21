@@ -65,3 +65,4 @@ class ReportGenerator:
             report_file.write(report)
 
         print(f"Generated report saved to {report_file_path}")
+        return report_file_path

@@ -2,6 +2,7 @@ import time
 import json
 import sys
 import signal
+import os
 from datetime import datetime, timedelta
 
 import schedule
@@ -13,6 +14,7 @@ from app.services.task_runner import TaskRunner
 from app.domain.task import Task
 from app.core.logger import LOG
 from app.core.config import Settings, REPOSITORY_DATA_FILE
+from app.services.notification.email_sender import EmailSender
 
 
 # 设置停止程序标识符
@@ -32,6 +34,8 @@ runner = TaskRunner(
     report_generator,
     llm_client
 )
+
+email_sender = EmailSender(config.email_smtp_server, config.email_smtp_port, config.email_from, config.email_auth_code)
 
 # -------------------------
 # 优雅退出
@@ -77,6 +81,12 @@ def run_scheduled_task():
 
             if result.status == "done":
                 LOG.info(f"{repo} done")
+                email_subject = ''.join([result.repo,datetime.now().date().isoformat(),"总结报告"])
+                report_file_path = os.path.join(config.processed_reports_path, result.report_file)
+                with open(report_file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                email_content = content
+                email_sender.send_email(config.email_to, email_subject, email_content)
             elif result.status == "skipped":
                 LOG.info(f"{repo} skipped")
             else:
@@ -97,12 +107,12 @@ def main():
 
     LOG.info("Daemon process started")
 
-    # run_scheduled_task()
+    run_scheduled_task()
 
     # 每天固定时间执行（推荐 ⭐）
     schedule.every().day.at("09:00").do(run_scheduled_task)
 
-    # 👉 也可以测试用（每分钟）
+    # 测试用（每分钟）
     # schedule.every(1).minutes.do(run_scheduled_task)
 
     try:

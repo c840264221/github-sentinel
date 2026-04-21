@@ -1,0 +1,12 @@
+{
+    "github_token": "",
+    "email":  {
+        "smtp_server": "smtp.qq.com",
+        "smtp_port": 465,
+        "from": "448851139@qq.com",
+        "to": "745135150@qq.com"
+    },
+    "update_interval": 60,
+    "github_progress_frequency_days": 1,
+    "github_progress_execution_time":"08:00"
+}
