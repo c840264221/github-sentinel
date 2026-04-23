@@ -1,0 +1,18 @@
+[run]
+omit =
+    app/core/logger.py
+    app/core/config.py
+    app/data
+    app/domain
+    app/interfaces/cli/*
+    app/logs
+    app/reports
+    app/domain/*
+    */__init__.py
+    */main.py
+    */*_main.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == "__main__":

@@ -7,13 +7,13 @@ import os
 
 class GitHubClient:
     subscription_repository = SubscriptionRepository()
-    base_url = os.getenv("GITHUB_BASE_URL")
-    def __init__(self, token):
+    def __init__(self, token, base_url=None):
         self.token = token
         self.headers = {
             "Authorization": f"Bearer {self.token}",
             "Accept": "application/vnd.github+json",
         }
+        self.base_url = base_url or os.getenv("GITHUB_BASE_URL")
     def fetch_repo_updates(self,repo, since):
         issues = self.fetch_issues(repo=repo, since=since)
         prs = self.fetch_pull_requests(repo=repo, since=since)
